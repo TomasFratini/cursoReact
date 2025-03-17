@@ -1,38 +1,19 @@
 import './App.css'
-import { useState, useEffect } from 'react'
-
-const API_URL_FACT_CATS = 'https://catfact.ninja/fact'
+import { useCatFact } from './hooks/useCatFact'
+import { useCatImage } from './hooks/useCatImage'
 
 export function App () {
-  const [fact, setFact] = useState()
+  const { fact, refreshFact } = useCatFact()
+  const { imgurl } = useCatImage({ fact })
 
-  const [imgurl, setImgurl] = useState()
-
-  useEffect(() => {
-    fetch(API_URL_FACT_CATS)
-      .then(response => response.json())
-      .then(data => {
-        const { fact } = data
-        setFact(fact)
-      })
-  }, [])
-
-  useEffect(() => {
-    if (!fact) return
-
-    const firstWord = fact.split(' ', 3).join(' ')
-
-    fetch(`https://cataas.com/cat/says/${firstWord}?size=50&color=red&json=true`)
-      .then(res => res.json())
-      .then(response => {
-        const { url } = response
-        setImgurl(url)
-      })
-  }, [fact])
+  const handleClick = () => {
+    refreshFact()
+  }
 
   return (
     <main>
       <h1>Prueba tecnica </h1>
+      <button onClick={handleClick}>New fact</button>
       {fact && <p>{fact}</p>}
       {imgurl && <img src={imgurl} alt={`Img extracted using the firsr word of ${fact}`} />}
     </main>
